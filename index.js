@@ -1,7 +1,6 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
-
-app.use(express.json())
 
 
 let persons = [
@@ -26,6 +25,14 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
+
+
+app.use(express.json())
+
+morgan.token('post-data', (req,res) => req.method === "POST" ? JSON.stringify(req.body) : "")
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
+
 
 const generateId = () => {
   return Math.floor(Math.random() * 10000000000).toString()
