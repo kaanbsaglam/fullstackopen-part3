@@ -1,6 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
+const { default: mongoose } = require('mongoose')
 
 const app = express()
 
@@ -45,7 +48,9 @@ const generateId = () => {
 }
 
 app.get('/api/persons', (request,response) => {
-    response.json(persons)
+    Person.find({}).then(result => {
+      response.json(result)
+    })
 })
 
 app.get('/info', (request,response) => {
@@ -53,13 +58,20 @@ app.get('/info', (request,response) => {
   response.send(info)
 })
 
-app.get('/api/persons/:id', (request,response) => {
+/* app.get('/api/persons/:id', (request,response) => {
   const requestedId = request.params.id
   const person = persons.find(p => p.id == requestedId)
   if(!person){
     return response.status(404).end()
   }
   response.json(person)
+}) */
+
+app.get('/api/notes/:id', (request, response) => {
+  Note.findById(request.params.id).then(note => {
+    response.json(note)
+
+  })
 })
 
 app.delete('/api/persons/:id', (request,response) => {
@@ -85,13 +97,15 @@ app.post('/api/persons', (request,response) => {
       error: `person with the same name ${body.name} exists` 
     })
   }
-  const newPerson = {
-    id: generateId(),
+  const newPerson = new Person({
     name: body.name,
     number: body.number
-  }
-  persons = persons.concat(newPerson)
-  response.json(newPerson)
+  })
+  newPerson.save().then(result => {
+    response.json(newPerson)
+
+  })
+  
 
 
 })
