@@ -59,8 +59,3 @@ else{
 
 
 
-/* person.save().then(result => {
-  console.log('note saved!')
-  console.log(result)
-  mongoose.connection.close()
-}) */
