@@ -11,10 +11,25 @@ mongoose.connect(url).then(result => {
     console.log('error connecting to mongoDB', error.message)
 })
 
+function numberPatternValidator (number) {
+    return /\d{2,3}-\d+/.test(number)
+}
+
 
 const phonebookSchema = new mongoose.Schema({
-    name: String,
-    number: String
+    name: {
+        type: String,
+        minLength: 5,
+        required: true
+    },
+    number: {
+        type: String,
+        minLength: 8,
+        validate:{ 
+            validator: numberPatternValidator,
+            message: props => `${props.value} - Numbers have to be in this pattern 22-3334445566 or 444-5556667788`
+        }
+    }
 })
 
 phonebookSchema.set('toJSON', {
@@ -29,16 +44,5 @@ const Person = mongoose.model('Person', phonebookSchema)
 
 module.exports = Person
 
-/* const savePerson = (name,number) => {
-    const person = new Person({
-        name:name,
-        number:number
-    })
-    person.save().then(result=> {
-        console.log("person saved")
-        console.log(result)
-        mongoose.connection.close()
-    })
-} */
 
 
